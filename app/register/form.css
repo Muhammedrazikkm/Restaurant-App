@@ -1,0 +1,157 @@
+.form-container {
+  max-width: 700px;
+  margin: 60px auto;
+  padding: 32px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 32px;
+  color: #333;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* Label styling */
+label {
+  display: block;
+  margin: 16px 0 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* General input style */
+input,
+select,
+textarea,
+.p-inputtext,
+.p-dropdown,
+.p-multiselect,
+.p-inputtextarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+}
+
+/* ---- Error Styling ---- */
+.p-invalid {
+  border-color: #e24c4b !important;
+}
+
+.p-error {
+  color: #e24c4b;
+  font-size: 13px;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Textarea resize */
+textarea,
+.p-inputtextarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+/* Button styling */
+button,
+.p-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:hover,
+.p-button:hover {
+  background-color: #0056b3;
+}
+
+/* Cuisine checkbox container */
+.cuisine-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cuisine-checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+/* Logo upload preview */
+.logo-upload-preview {
+  margin-top: 12px;
+}
+
+.logo-preview-container {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.logo-preview {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 4px;
+  background: #f9f9f9;
+}
+
+/* Message */
+.message,
+.mt-3 {
+  margin-top: 20px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+/* Responsive layout */
+@media (max-width: 600px) {
+  .form-container {
+    padding: 20px;
+    margin: 30px 10px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  input,
+  select,
+  textarea,
+  .p-inputtext,
+  .p-dropdown,
+  .p-multiselect,
+  .p-inputtextarea {
+    font-size: 14px !important;
+  }
+
+  .p-button {
+    font-size: 15px;
+  }
+
+  .logo-preview {
+    width: 120px;
+    height: 120px;
+  }
+}
