@@ -9,11 +9,11 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { FileUpload } from "primereact/fileupload";
 import { Message } from "primereact/message";
 import { Button } from "primereact/button";
-import "./form.css";// Import CSS 
+import "./form.css"; // Import CSS
 
 // Component: RegisterForm
 export default function RegisterForm() {
-    // Initial form state
+  // Initial form state
   const [form, setForm] = useState({
     name: "",
     category: "",
@@ -38,9 +38,9 @@ export default function RegisterForm() {
     logoPreview: null,
   });
 
-  const [formErrors, setFormErrors] = useState({});// Store validation errors
-  const [message, setMessage] = useState("");// Success or error message
-  const debounceTimer = useRef(null);// To delay the API call when typing pincode
+  const [formErrors, setFormErrors] = useState({}); // Store validation errors
+  const [message, setMessage] = useState(""); // Success or error message
+  const debounceTimer = useRef(null); // To delay the API call when typing pincode
 
   const cuisines = ["Indian", "Chinese", "Italian", "Mexican"];
   const categories = ["Restaurant", "Cafe", "Bakery", "Juice Shop", "Coolbar"];
@@ -58,7 +58,7 @@ export default function RegisterForm() {
     country: useRef(null),
   };
 
-   // validation rules
+  // validation rules
   const validate = () => {
     const errors = {};
     if (!form.name.trim()) errors.name = "Name is required";
@@ -70,6 +70,11 @@ export default function RegisterForm() {
     if (!form.city.trim()) errors.city = "City is required";
     if (!form.state.trim()) errors.state = "State is required";
     if (!form.country.trim()) errors.country = "Country is required";
+
+    if (form.licenseNumber && !/^\d{14}$/.test(form.licenseNumber)) {
+      errors.licenseNumber = "License number must be exactly 14 digits";
+    }
+
     return errors;
   };
 
@@ -77,18 +82,21 @@ export default function RegisterForm() {
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
-     // When uploading logo image
+    // When uploading logo image
     if (name === "logo") {
       const file = files[0];
-      if (file && !["image/png", "image/jpeg", "image/jpg"].includes(file.type)) {
+      if (
+        file &&
+        !["image/png", "image/jpeg", "image/jpg"].includes(file.type)
+      ) {
         setMessage("❌ Only PNG or JPG files are allowed for logo.");
         setForm({ ...form, logo: null, logoPreview: null });
         return;
       }
       // Preview logo image
       setForm({ ...form, logo: file, logoPreview: URL.createObjectURL(file) });
-    } 
-     // When user types pincode, fetch city/state/country using Geoapify
+    }
+    // When user types pincode, fetch city/state/country using Geoapify
     else if (name === "pincode") {
       setForm({ ...form, pincode: value });
       clearTimeout(debounceTimer.current);
@@ -96,7 +104,9 @@ export default function RegisterForm() {
         if (value.length >= 3) {
           try {
             const res = await fetch(
-              `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(value)}&apiKey=${process.env.NEXT_PUBLIC_GEOAPIFY}`
+              `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
+                value
+              )}&apiKey=${process.env.NEXT_PUBLIC_GEOAPIFY}`
             );
             const data = await res.json();
             if (data.features && data.features.length > 0) {
@@ -124,7 +134,7 @@ export default function RegisterForm() {
     const errors = validate();
     setFormErrors(errors);
 
-      // If there are errors, scroll to the first invalid field
+    // If there are errors, scroll to the first invalid field
     if (Object.keys(errors).length > 0) {
       setMessage("Please fill all required fields.");
       const firstErrorKey = Object.keys(errors)[0];
@@ -146,7 +156,7 @@ export default function RegisterForm() {
       }
     }
 
-        // Send POST request to backend API
+    // Send POST request to backend API
     try {
       const res = await fetch("/api/resturants", {
         method: "POST",
@@ -165,25 +175,47 @@ export default function RegisterForm() {
     }
   };
 
-    // Render form
+  // Render form
   return (
     <div className="form-container">
       <h2>Register Restaurant/Store</h2>
 
-      <form onSubmit={handleSubmit} encType="multipart/form-data" className="p-fluid">
+      <form
+        onSubmit={handleSubmit}
+        encType="multipart/form-data"
+        className="p-fluid"
+      >
         <label>Name</label>
-        <InputText name="name" value={form.name} onChange={handleChange} className={formErrors.name && "p-invalid"} ref={fieldRefs.name} />
-        {formErrors.name && <small className="p-error">{formErrors.name}</small>}
+        <InputText
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          className={formErrors.name && "p-invalid"}
+          ref={fieldRefs.name}
+        />
+        {formErrors.name && (
+          <small className="p-error">{formErrors.name}</small>
+        )}
 
         <label>Category</label>
-        <Dropdown name="category" value={form.category} options={categories.map(c => ({ label: c, value: c }))} onChange={(e) => setForm({ ...form, category: e.value })} placeholder="Select Category" className={formErrors.category && "p-invalid"} ref={fieldRefs.category} />
-        {formErrors.category && <small className="p-error">{formErrors.category}</small>}
+        <Dropdown
+          name="category"
+          value={form.category}
+          options={categories.map((c) => ({ label: c, value: c }))}
+          onChange={(e) => setForm({ ...form, category: e.value })}
+          placeholder="Select Category"
+          className={formErrors.category && "p-invalid"}
+          ref={fieldRefs.category}
+        />
+        {formErrors.category && (
+          <small className="p-error">{formErrors.category}</small>
+        )}
 
         <label>Cuisine Types</label>
         <MultiSelect
           name="cuisineTypes"
           value={form.cuisineTypes}
-          options={cuisines.map(c => ({ label: c, value: c }))}
+          options={cuisines.map((c) => ({ label: c, value: c }))}
           onChange={(e) => setForm({ ...form, cuisineTypes: e.value })}
           placeholder="Select Cuisines"
           display="chip"
@@ -205,59 +237,178 @@ export default function RegisterForm() {
         />
 
         <label>Contact Person</label>
-        <InputText name="contactPerson" value={form.contactPerson} onChange={handleChange} />
+        <InputText
+          name="contactPerson"
+          value={form.contactPerson}
+          onChange={handleChange}
+        />
 
         <label>Phone</label>
-        <InputText name="phone" value={form.phone} onChange={handleChange} className={formErrors.phone && "p-invalid"} ref={fieldRefs.phone} />
-        {formErrors.phone && <small className="p-error">{formErrors.phone}</small>}
-
+        <InputText
+          name="phone"
+          value={form.phone}
+          onChange={handleChange}
+          inputMode="numeric"
+          keyfilter="int"
+          onKeyPress={(e) => {
+            if (!/[0-9]/.test(e.key)) {
+              e.preventDefault();
+            }
+          }}
+          className={formErrors.phone && "p-invalid"}
+          ref={fieldRefs.phone}
+        />
+        {formErrors.phone && (
+          <small className="p-error">{formErrors.phone}</small>
+        )}
         <label>Email</label>
-        <InputText name="email" value={form.email} onChange={handleChange} className={formErrors.email && "p-invalid"} autoComplete="email" ref={fieldRefs.email} />
-        {formErrors.email && <small className="p-error">{formErrors.email}</small>}
+        <InputText
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+          className={formErrors.email && "p-invalid"}
+          autoComplete="email"
+          ref={fieldRefs.email}
+        />
+        {formErrors.email && (
+          <small className="p-error">{formErrors.email}</small>
+        )}
 
         <label>Address</label>
-        <InputText name="address" value={form.address} onChange={handleChange} className={formErrors.address && "p-invalid"} ref={fieldRefs.address} />
-        {formErrors.address && <small className="p-error">{formErrors.address}</small>}
+        <InputText
+          name="address"
+          value={form.address}
+          onChange={handleChange}
+          className={formErrors.address && "p-invalid"}
+          ref={fieldRefs.address}
+        />
+        {formErrors.address && (
+          <small className="p-error">{formErrors.address}</small>
+        )}
 
         <label>Pincode</label>
-        <InputText name="pincode" value={form.pincode} onChange={handleChange} className={formErrors.pincode && "p-invalid"} ref={fieldRefs.pincode} />
-        {formErrors.pincode && <small className="p-error">{formErrors.pincode}</small>}
+        <InputText
+          name="pincode"
+          value={form.pincode}
+          onChange={handleChange}
+          inputMode="numeric"
+          keyfilter="int"
+          onKeyPress={(e) => {
+            if (!/[0-9]/.test(e.key)) {
+              e.preventDefault();
+            }
+          }}
+          className={formErrors.pincode && "p-invalid"}
+          ref={fieldRefs.pincode}
+        />
+        {formErrors.pincode && (
+          <small className="p-error">{formErrors.pincode}</small>
+        )}
 
         <label>City</label>
-        <InputText name="city" value={form.city} onChange={handleChange} className={formErrors.city && "p-invalid"} ref={fieldRefs.city} />
-        {formErrors.city && <small className="p-error">{formErrors.city}</small>}
+        <InputText
+          name="city"
+          value={form.city}
+          onChange={handleChange}
+          className={formErrors.city && "p-invalid"}
+          ref={fieldRefs.city}
+        />
+        {formErrors.city && (
+          <small className="p-error">{formErrors.city}</small>
+        )}
 
         <label>State</label>
-        <InputText name="state" value={form.state} onChange={handleChange} className={formErrors.state && "p-invalid"} ref={fieldRefs.state} />
-        {formErrors.state && <small className="p-error">{formErrors.state}</small>}
+        <InputText
+          name="state"
+          value={form.state}
+          onChange={handleChange}
+          className={formErrors.state && "p-invalid"}
+          ref={fieldRefs.state}
+        />
+        {formErrors.state && (
+          <small className="p-error">{formErrors.state}</small>
+        )}
 
         <label>Country</label>
-        <InputText name="country" value={form.country} onChange={handleChange} className={formErrors.country && "p-invalid"} ref={fieldRefs.country} />
-        {formErrors.country && <small className="p-error">{formErrors.country}</small>}
+        <InputText
+          name="country"
+          value={form.country}
+          onChange={handleChange}
+          className={formErrors.country && "p-invalid"}
+          ref={fieldRefs.country}
+        />
+        {formErrors.country && (
+          <small className="p-error">{formErrors.country}</small>
+        )}
 
         <label>Google Map Coordinates (Optional)</label>
-        <InputText name="coordinates" value={form.coordinates} onChange={handleChange} />
+        <InputText
+          name="coordinates"
+          value={form.coordinates}
+          onChange={handleChange}
+        />
 
         <label>Operating Hours (Optional)</label>
         <InputText name="hours" value={form.hours} onChange={handleChange} />
 
         <label>Website URL (Optional)</label>
-        <InputText name="website" value={form.website} onChange={handleChange} />
+        <InputText
+          name="website"
+          value={form.website}
+          onChange={handleChange}
+        />
 
         <label>Social Media Links (Optional)</label>
-        <InputText name="socialLinks" value={form.socialLinks} onChange={handleChange} />
+        <InputText
+          name="socialLinks"
+          value={form.socialLinks}
+          onChange={handleChange}
+        />
 
         <label>Description (Optional)</label>
-        <InputTextarea name="description" value={form.description} onChange={handleChange} rows={5} autoResize />
+        <InputTextarea
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          rows={5}
+          autoResize
+        />
 
         <label>License Number (Optional)</label>
-        <InputText name="licenseNumber" value={form.licenseNumber} onChange={handleChange} />
+        <InputText
+          name="licenseNumber"
+          value={form.licenseNumber}
+          onChange={handleChange}
+          inputMode="numeric"
+          keyfilter="int"
+          onKeyPress={(e) => {
+            if (!/[0-9]/.test(e.key)) {
+              e.preventDefault();
+            }
+          }}
+          className={formErrors.licenseNumber && "p-invalid"}
+        />
+        {formErrors.licenseNumber && (
+          <small className="p-error">{formErrors.licenseNumber}</small>
+        )}
 
         <label>GST Number (Optional)</label>
-        <InputText name="gstNumber" value={form.gstNumber} onChange={handleChange} />
+        <InputText
+          name="gstNumber"
+          value={form.gstNumber}
+          onChange={handleChange}
+        />
 
         <label>Status</label>
-        <Dropdown name="status" value={form.status} options={[{ label: "Active", value: "Active" }, { label: "Inactive", value: "Inactive" }]} onChange={(e) => setForm({ ...form, status: e.value })} />
+        <Dropdown
+          name="status"
+          value={form.status}
+          options={[
+            { label: "Active", value: "Active" },
+            { label: "Inactive", value: "Inactive" },
+          ]}
+          onChange={(e) => setForm({ ...form, status: e.value })}
+        />
 
         <label>Upload Logo</label>
         <div className="logo-upload-preview">
@@ -270,16 +421,26 @@ export default function RegisterForm() {
             auto
             uploadHandler={(e) => {
               const file = e.files[0];
-              if (!["image/png", "image/jpeg", "image/jpg"].includes(file.type)) {
+              if (
+                !["image/png", "image/jpeg", "image/jpg"].includes(file.type)
+              ) {
                 setMessage("❌ Only PNG or JPG files are allowed for logo.");
               } else {
-                setForm({ ...form, logo: file, logoPreview: URL.createObjectURL(file) });
+                setForm({
+                  ...form,
+                  logo: file,
+                  logoPreview: URL.createObjectURL(file),
+                });
               }
             }}
           />
           {form.logo && form.logoPreview && (
             <div className="logo-preview-container">
-              <img src={form.logoPreview} alt="Logo Preview" className="logo-preview" />
+              <img
+                src={form.logoPreview}
+                alt="Logo Preview"
+                className="logo-preview"
+              />
             </div>
           )}
         </div>
