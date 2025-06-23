@@ -49,7 +49,16 @@ const restaurantSchema = new mongoose.Schema(
 
     socialLinks: String,
     description: String,
-    licenseNumber: String,
+    licenseNumber: {
+      type: String,
+      validate: {
+        validator: function (v) {
+          return v === "" || v === null || /^\d{14}$/.test(v);
+        },
+        message: props =>
+          `${props.value} is invalid. License number must be 14 digits.`,
+      },
+    },
     gstNumber: String,
 
     status: {
