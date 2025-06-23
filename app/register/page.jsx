@@ -49,6 +49,8 @@ export default function RegisterForm() {
   const fieldRefs = {
     name: useRef(null),
     category: useRef(null),
+    contactPerson: useRef(null),
+
     phone: useRef(null),
     email: useRef(null),
     address: useRef(null),
@@ -66,6 +68,7 @@ export default function RegisterForm() {
     if (!form.phone.match(/^\d{10}$/)) errors.phone = "Phone must be 10 digits";
     if (!form.email.match(/^\S+@\S+\.\S+$/)) errors.email = "Email is invalid";
     if (!form.address.trim()) errors.address = "Address is required";
+    else if (form.address.length < 5) errors.address = "Address is too short";
     if (!form.pincode.match(/^\d{5,6}$/)) errors.pincode = "Invalid pincode";
     if (!form.city.trim()) errors.city = "City is required";
     if (!form.state.trim()) errors.state = "State is required";
@@ -74,6 +77,32 @@ export default function RegisterForm() {
     if (form.licenseNumber && !/^\d{14}$/.test(form.licenseNumber)) {
       errors.licenseNumber = "License number must be exactly 14 digits";
     }
+    if (!form.contactPerson.trim()) {
+  errors.contactPerson = "Contact person is required";
+} else if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(form.contactPerson.trim())) {
+  errors.contactPerson =
+    "Only letters and single spaces allowed (no digits or special characters)";
+}
+
+if (form.coordinates && !/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/.test(form.coordinates)) {
+  errors.coordinates = "Coordinates must be in format: latitude,longitude";
+}
+
+if (form.hours && !/^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i.test(form.hours)) {
+  errors.hours = "Time must be in format HH:MM AM/PM";
+}
+
+if (form.description && !/^[a-zA-Z0-9\s.,!?()'-]{3,}$/.test(form.description)) {
+  errors.description = "Only letters, numbers & basic punctuation allowed";
+}
+
+if (form.licenseNumber && !/^\d{14}$/.test(form.licenseNumber)) {
+  errors.licenseNumber = "License number must be exactly 14 digits";
+}
+
+if (form.gstNumber && !/^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$/.test(form.gstNumber)) {
+  errors.gstNumber = "Invalid GST format. Must be 15 alphanumeric characters";
+}
 
     return errors;
   };
@@ -236,12 +265,18 @@ export default function RegisterForm() {
           className="custom-cuisine-dropdown"
         />
 
-        <label>Contact Person</label>
-        <InputText
-          name="contactPerson"
-          value={form.contactPerson}
-          onChange={handleChange}
-        />
+<label>Contact Person</label>
+<InputText
+  name="contactPerson"
+  value={form.contactPerson}
+  onChange={handleChange}
+  className={formErrors.contactPerson && "p-invalid"}
+  ref={fieldRefs.contactPerson}
+/>
+{formErrors.contactPerson && (
+  <small className="p-error">{formErrors.contactPerson}</small>
+)}
+
 
         <label>Phone</label>
         <InputText

@@ -5,7 +5,18 @@ const restaurantSchema = new mongoose.Schema(
     name: { type: String, required: true },
     category: String,
     cuisineTypes: [String],
-    contactPerson: String,
+    contactPerson: {
+      type: String,
+      required: [true, "Contact person is required"],
+      validate: {
+        validator: function (v) {
+          return /^[A-Za-z]+(?: [A-Za-z]+)*$/.test(v.trim());
+        },
+        message: (props) =>
+          `${props.value} is not a valid name! Only letters and single spaces allowed, and it should not be empty.`,
+      },
+    },
+    
 
     phone: {
       type: String,
